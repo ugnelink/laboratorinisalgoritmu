@@ -1,0 +1,41 @@
+import concurrent.futures
+import threading
+import statistics
+ 
+from queens import Queens
+from bishops import Bishops
+ 
+return_queens = []
+return_bishops = []
+ 
+mean_bishops = []
+mean_queens = []
+ 
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    for i in range(4, 11):
+        queens_class = Queens(i)
+        bishops_class = Bishops(i)
+        for j in range(100):
+            queens_future = executor.submit(queens_class.solve)
+            bishops_future = executor.submit(bishops_class.solve)
+ 
+            queens_value = queens_future.result()
+            bishops_value = bishops_future.result()
+ 
+            # print(queens_future.result())
+ 
+            return_queens.append(queens_value)
+            return_bishops.append(bishops_value)
+ 
+        queens_avg = statistics.mean(return_queens)
+        bishops_avg = statistics.mean(return_bishops)
+ 
+        # print('{}x{} lentos valdoviu vidurkis: {}'.format(i, i, queens_avg))
+        # print('{}x{} lentos rikiu vidurkis: {}'.format(i, i, bishops_avg))
+ 
+        mean_bishops.append(bishops_avg)
+        mean_queens.append(queens_avg)
+ 
+print(mean_queens)
+print(mean_bishops)
+ 
